@@ -90,6 +90,7 @@ const AdminPage: React.FC = () => {
                       {/* Add checkbox */}
                       <div className="mt-2">
                         <input
+                          title={"jk"}
                           type="checkbox"
                           checked={selectedCells.some((cell) => cell.row === rowIndex && cell.col === key)}
                           onChange={() => handleCellSelect(rowIndex, key)}
@@ -111,6 +112,7 @@ const AdminPage: React.FC = () => {
           <div className="mb-6 flex items-center">
             <label className="mr-4 text-lg font-semibold text-white">Assign to Dealer:</label>
             <select
+            title={"jk"}
               value={selectedDealer}
               onChange={(e) => setSelectedDealer(e.target.value)}
               className="p-3 border border-gray-600 rounded-lg shadow-sm bg-gray-800 text-white focus:ring-2 focus:ring-blue-500"
