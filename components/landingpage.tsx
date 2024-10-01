@@ -1,11 +1,14 @@
 // components/LandingPage.tsx
 "use client";
 import React, { useState } from "react";
-import SwiperCore, { Autoplay } from "swiper";
+import SwiperCore from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Image from "next/image";
 import BuyModal from "./BuyModal";
 import "swiper/swiper-bundle.css"; // Import Swiper styles
+import { Autoplay } from "swiper/modules";
+import Link from "next/link";
+import Logo from "@/app/(DashboardLayout)/layout/shared/logo/Logo";
 
 // Sample electric products data with multiple images
 const productImages = [
@@ -32,23 +35,34 @@ const LandingPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-gray-900 to-black text-white">
+    <div className="min-h-screen bg-white text-gray-900">
       {/* Header Section */}
-      <header className="flex justify-between items-center p-6 bg-black/60 shadow-lg backdrop-blur-lg">
-        <h1 className="text-4xl font-bold text-blue-400">Wamda</h1>
+      <header className="flex justify-between items-center p-6 bg-white shadow-lg">
+       <Logo/>
         <nav>
-  <ul className="flex space-x-4">
-    <li><a href="#products" className="hover:underline">Products</a></li>
-    <li><a href="#about" className="hover:text-blue-400 transition-all">About</a></li>
-    <li><a href="#contact" className="hover:underline">Contact</a></li>
-  </ul>
-</nav>
-
+          <ul className="flex space-x-4">
+            <li>
+              <Link href="#products" className="hover:underline text-gray-600">
+                Products
+              </Link>
+            </li>
+            <li>
+              <Link href="#about" className="hover:text-blue-500 transition-all text-gray-600">
+                About
+              </Link>
+            </li>
+            <li>
+              <Link href="#contact" className="hover:underline text-gray-600">
+                Contact
+              </Link>
+            </li>
+          </ul>
+        </nav>
       </header>
 
       {/* Product Carousel Section */}
       <section id="products" className="py-16 px-4">
-        <h2 className="text-3xl font-semibold text-center mb-8 text-blue-200">Explore Our Products</h2>
+        <h2 className="text-3xl font-semibold text-center mb-8 text-blue-500">Explore Our Products</h2>
         <Swiper
           autoplay={{ delay: 4000, disableOnInteraction: false }}
           onSlideChange={handleSlideChange}
@@ -63,10 +77,10 @@ const LandingPage: React.FC = () => {
                 alt={product.name}
                 width={350}
                 height={350}
-                className="rounded-lg shadow-md border-2 border-gray-700"
+                className="rounded-lg shadow-md border-2 border-gray-300"
               />
-              <h3 className="text-xl font-semibold">{product.name}</h3>
-              <p className="text-lg text-gray-300">{product.price}</p>
+              <h3 className="text-xl font-semibold text-gray-800">{product.name}</h3>
+              <p className="text-lg text-gray-500">{product.price}</p>
             </SwiperSlide>
           ))}
         </Swiper>
@@ -89,8 +103,8 @@ const LandingPage: React.FC = () => {
       />
 
       {/* Footer Section */}
-      <footer className="p-6 bg-black text-center">
-        <p className="text-sm text-gray-400">© 2024 Your Brand. All rights reserved.</p>
+      <footer className="p-6 bg-gray-100 text-center">
+        <p className="text-sm text-gray-500">© 2024 Your Brand. All rights reserved.</p>
       </footer>
     </div>
   );
