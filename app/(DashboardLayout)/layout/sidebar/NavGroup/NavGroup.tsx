@@ -12,6 +12,7 @@ interface ItemType {
 }
 
 const NavGroup = ({ item }: ItemType) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ListSubheaderStyle = styled((props: Theme | any) => <ListSubheader disableSticky {...props} />)(
     ({ theme }) => ({
       ...theme.typography.overline,

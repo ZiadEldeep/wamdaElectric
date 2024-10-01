@@ -1,11 +1,11 @@
 import React from "react";
 import {
-  Box,
+  // Box,
   Typography,
   Button,
   Stack,
 } from "@mui/material";
-import Link from "next/link";
+// import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
@@ -67,9 +67,10 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
         const data = await res.json();
         throw new Error(data.message);
       }
-    } catch (error: any) {
+    }
+    catch (error) {
       toast.update(loadingToastId, {
-        render: error.message || "فشل التسجيل. يرجى المحاولة مرة أخرى.",
+        render: (error as {message:string})?.message || "فشل التسجيل. يرجى المحاولة مرة أخرى.",
         type: "error",
         isLoading: false,
         autoClose: 3000,

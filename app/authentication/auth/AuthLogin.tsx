@@ -82,9 +82,11 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
           autoClose: 3000,
         });
       }
-    } catch (error: any) {
+
+    }
+    catch (error) {
       toast.update(loadingToastId, {
-        render: error.message || "فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.",
+        render: (error as {message:string})?.message || "فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.",
         type: "error",
         isLoading: false,
         autoClose: 3000,

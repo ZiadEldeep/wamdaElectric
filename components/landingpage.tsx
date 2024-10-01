@@ -29,9 +29,9 @@ SwiperCore.use([Autoplay]);
 const LandingPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeProduct, setActiveProduct] = useState(productImages[0]);
-
-  const handleSlideChange = (swiper: any) => {
-    setActiveProduct(productImages[swiper.activeIndex]);
+ 
+  const handleSlideChange = (swiper: { activeIndex: string | number; }) => {
+    setActiveProduct(productImages[swiper.activeIndex as number]);
   };
 
   return (

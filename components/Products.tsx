@@ -17,12 +17,12 @@ const PageWrapper = styled.div`
   `;
   // background: linear-gradient(135deg, #f0f4c3, #a7ffeb);
 
-const Title = styled.h2`
-  font-size: 2.5rem;
-  font-weight: 800;
-  color: #444;
-  margin-bottom: 1.5rem;
-`;
+// const Title = styled.h2`
+//   font-size: 2.5rem;
+//   font-weight: 800;
+//   color: #444;
+//   margin-bottom: 1.5rem;
+// `;
 
 const FileInput = styled.input`
   padding: 0.75rem;

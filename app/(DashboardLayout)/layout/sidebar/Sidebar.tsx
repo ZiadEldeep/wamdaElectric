@@ -14,6 +14,7 @@ const MSidebar = ({
   onSidebarClose,
   isSidebarOpen,
 }: ItemType) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const lgUp = useMediaQuery((theme: any) => theme.breakpoints.up("lg"));
 
   const sidebarWidth = "270px";

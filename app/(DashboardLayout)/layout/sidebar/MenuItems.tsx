@@ -1,16 +1,16 @@
 import {
-  IconAperture,
-  IconCopy,
-  IconMapPin,
+  // IconAperture,
+  // IconCopy,
+  // IconMapPin,
   IconLayoutDashboard,
   IconLogin,
-  IconMoodHappy,
-  IconTypography,
+  // IconMoodHappy,
+  // IconTypography,
   IconUserPlus,
   IconUsers,
   IconReceipt2,
-  IconStethoscope,
-  IconPill,
+  // IconStethoscope,
+  // IconPill,
 } from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
@@ -62,22 +62,22 @@ const Menuitems = [
     icon: IconUserPlus,
     href: "/authentication/register",
   },
-  {
-    navlabel: true,
-    subheader: "Extra",
-  },
-  {
-    id: uniqueId(),
-    title: "Icons",
-    icon: IconMoodHappy,
-    href: "/icons",
-  },
-  {
-    id: uniqueId(),
-    title: "Sample Page",
-    icon: IconAperture,
-    href: "/sample-page",
-  },
+  // {
+  //   navlabel: true,
+  //   subheader: "Extra",
+  // },
+  // {
+  //   id: uniqueId(),
+  //   title: "Icons",
+  //   icon: IconMoodHappy,
+  //   href: "/icons",
+  // },
+  // {
+  //   id: uniqueId(),
+  //   title: "Sample Page",
+  //   icon: IconAperture,
+  //   href: "/sample-page",
+  // },
 
   // Added "Users" item
 

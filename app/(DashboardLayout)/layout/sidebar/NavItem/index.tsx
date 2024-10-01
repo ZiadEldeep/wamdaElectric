@@ -12,12 +12,15 @@ import {
 import Link from "next/link";
 
 type NavGroup = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [x: string]: any;
   id?: string;
   navlabel?: boolean;
   subheader?: string;
   title?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   href?: any;
   onClick?: React.MouseEvent<HTMLButtonElement, MouseEvent>;
 };
@@ -25,7 +28,9 @@ type NavGroup = {
 interface ItemType {
   item: NavGroup;
   onClick: (event: React.MouseEvent<HTMLElement>) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   hideMenu?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   level?: number | any;
   pathDirect: string;
 }
