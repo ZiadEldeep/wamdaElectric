@@ -216,7 +216,7 @@ const page = () => {
         </div>
       )}
 
-      {!isLoading && <Blog products={products.products} />}
+      {!isLoading && <Blog products={products.products} role={'admin'} />}
       <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
         <Pagination
           count={Math.ceil(products?.total / pageSize)} // Assuming you have total products count from API
