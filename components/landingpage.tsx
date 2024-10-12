@@ -1,14 +1,12 @@
 // components/LandingPage.tsx
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import SwiperCore from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
-import Image from "next/image";
-import BuyModal from "./BuyModal";
+
 import "swiper/swiper-bundle.css"; // Import Swiper styles
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import Link from "next/link";
-import Logo from "@/app/(DashboardLayout)/layout/shared/logo/Logo";
 import { ProductFormData } from "./forms/AddProduct";
 import { getPriceByRole } from "@/hooks/role";
 import { Avatar, CardContent, Grid, Rating, Stack, Typography } from '@mui/material';

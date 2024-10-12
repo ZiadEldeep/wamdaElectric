@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { ProductFormData } from '../forms/AddProduct';
 import Blog from '@/app/(DashboardLayout)/components/dashboard/Blog';
 import { getTypePriceByRole } from '@/hooks/role';
-
+import { Spin } from 'antd';
 interface CategoryProps {
   name: string;
   products: ProductFormData[];
@@ -41,7 +41,7 @@ const CategoryTabs = ({
 
   // Get the remaining categories for the Select dropdown
   const remainingCategories = categories.slice(4);
-
+ console.log(getTypePriceByRole(role))
   return (
     <Box sx={{ width: '100%' }}>
       {/* Tabs for first 4 categories */}
@@ -121,13 +121,15 @@ const CategoryTabs = ({
         exit={{ opacity: 0, x: -50 }}
         transition={{ duration: 0.5 }}
       >
-      {!productsLoading &&   <Box>
+      {!productsLoading ?   <Box>
           {products && products.length > 0 ? (
-           <Blog products={products} role={getTypePriceByRole(role)}/>
+           <Blog products={products} role={role}/>
           ) : (
             <Box>No products found for this category.</Box>
           )}
-        </Box>}
+        </Box>:<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+      <Spin size="large" />
+    </div>}
       </motion.div>
     </Box>
   );

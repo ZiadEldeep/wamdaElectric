@@ -84,8 +84,11 @@ const Page = () => {
 
   return (
     <div>
-      {!productsLoading2&&<LandingPage products={products2.products} type={getTypePriceByRole(userData?userData.role:"")} />}
-      <CategoryTabs 
+      {!productsLoading2&&!isLoading ?<LandingPage products={products2.products} type={getTypePriceByRole(userData?userData.role:"")} />:
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+      <Spin size="large" />
+    </div>}
+     {!isLoading&& <CategoryTabs 
         selectedCategory={selectedCategory} 
         setSelectedCategory={setSelectedCategory} 
         products={!productsLoading?products.products:[]} 
@@ -93,7 +96,7 @@ const Page = () => {
         productsLoading={productsLoading}
         role={getTypePriceByRole(userData?userData.role:"")} 
       />
-      
+      }
       {/* Pagination Controls */}
       <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
         <Pagination
