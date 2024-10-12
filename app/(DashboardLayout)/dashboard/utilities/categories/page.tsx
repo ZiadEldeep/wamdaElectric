@@ -1,17 +1,35 @@
 'use client';
 
-import React from 'react';
-import { useCategories } from '@/hooks/useCategories'; // تأكد من وجود هذا الهوك
-import { Box, Card, CardContent, CircularProgress, Tooltip, Typography, Grid, IconButton, Button } from '@mui/material';
-import { IconTrash, IconEdit, IconEye, IconPlus } from '@tabler/icons-react'; // استخدام أيقونة IconPlus
+import React, { useState } from 'react';
+import { useCategories } from '@/hooks/useCategories';
+import {
+  Box,
+  Card,
+  CardContent,
+  CircularProgress,
+  Tooltip,
+  Typography,
+  Grid,
+  IconButton,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from '@mui/material';
+import { IconTrash, IconEdit, IconEye, IconPlus } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Link from 'next/link';
 import axios from 'axios';
+import CategoryForm from '@/components/forms/CategoryForm';
+import { Spin } from 'antd';
 
 const CategoriesPage = () => {
   const { data, error, isLoading, refetch } = useCategories();
+  const [openEditDialog, setOpenEditDialog] = useState(false); // إدارة الـ Dialog
+  const [selectedCategory, setSelectedCategory] = useState<any>(null); // الفئة المختارة للتحرير
 
   // Handle delete action
   const handleDelete = async (id: string) => {
@@ -24,15 +42,21 @@ const CategoriesPage = () => {
     }
   };
 
-  const handleEdit = (id: string) => {
-    toast.info('Edit category feature coming soon');
+  const handleEdit = (category: any) => {
+    setSelectedCategory(category); // ضبط الفئة المختارة
+    setOpenEditDialog(true); // فتح الـ Dialog
+  };
+
+  const handleCloseEditDialog = () => {
+    setOpenEditDialog(false); // إغلاق الـ Dialog
+    setSelectedCategory(null); // إعادة تعيين الفئة المختارة
   };
 
   if (isLoading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-        <CircularProgress />
-      </Box>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <Spin size="large" />
+    </div>
     );
   }
 
@@ -87,7 +111,7 @@ const CategoriesPage = () => {
 
                     {/* Edit Icon with Tooltip */}
                     <Tooltip title="Edit Category" arrow>
-                      <IconButton onClick={() => handleEdit(category._id)}>
+                      <IconButton onClick={() => handleEdit(category)}>
                         <IconEdit />
                       </IconButton>
                     </Tooltip>
@@ -105,6 +129,27 @@ const CategoriesPage = () => {
           </Grid>
         ))}
       </Grid>
+
+      {/* Edit Category Dialog */}
+      <Dialog open={openEditDialog} onClose={handleCloseEditDialog} fullWidth maxWidth="sm">
+        <DialogTitle>Edit Category</DialogTitle>
+        <DialogContent>
+          {selectedCategory && (
+            <CategoryForm
+              categoryData={selectedCategory} 
+              onSuccess={() => {
+                refetch(); 
+                handleCloseEditDialog(); // إغلاق الـ Dialog بعد النجاح
+              }}
+            />
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseEditDialog} color="secondary">
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

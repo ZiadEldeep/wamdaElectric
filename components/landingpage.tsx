@@ -27,6 +27,8 @@ const LandingPage= ({products,type}:{products:ProductFormData[],type:string}) =>
           autoplay={{ delay: 4000, disableOnInteraction: false }}
           spaceBetween={20}
           className="pb-8"
+          pagination={{clickable:true}}
+          navigation
           breakpoints={{
             // When window width is >= 1024px (lg)
             1024: {

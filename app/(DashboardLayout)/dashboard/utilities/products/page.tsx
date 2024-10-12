@@ -2,12 +2,13 @@
 import React, { useState } from 'react';
 import Products from '@/components/Products';
 import Blog from '@/app/(DashboardLayout)/components/dashboard/Blog';
-import { Box, Button, Tooltip, TextField, MenuItem, Typography, Rating, Pagination } from '@mui/material';
+import { Box, Button, Tooltip, TextField, MenuItem, Pagination } from '@mui/material';
 import Link from 'next/link';
-import { IconLayoutGridAdd } from '@tabler/icons-react';
+import { IconLayoutGridAdd, IconPlus } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { Alert, Spin } from 'antd';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 
 const page = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -60,7 +61,7 @@ const page = () => {
     return response.json();
   };
 
-  const { data: products, error, isLoading } = useQuery({
+  const { data: products, error, isLoading,refetch } = useQuery({
     queryKey: ['products', searchTerm, currentPage, filters],
     queryFn: fetchProducts,
   });
@@ -79,14 +80,32 @@ const page = () => {
 
   return (
     <div>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+      <Box sx={{ display: 'flex',gap:"10px",flexWrap:"wrap", alignItems: 'center',}}>
+        <div className="flex justify-between items-center max-sm:w-full flex-grow mb-2">
+
         <TextField
           label="Search"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           variant="outlined"
-        />
-
+          className=''
+          />
+        <Tooltip title="Add New Category" arrow>
+          <Link href="/dashboard/utilities/categories/add" passHref>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<IconPlus />}
+              component={motion.div}
+              whileHover={{ scale: 1.1 }}
+              >
+              Add Category
+            </Button>
+          </Link>
+        </Tooltip>
+              </div>
+              <div className="flex justify-between items-center max-sm:w-full gap-4 mb-2 ">
+        <Products refetch={refetch} />
         <Tooltip title="Add a new product" arrow>
           <Link href="/dashboard/utilities/products/add" passHref>
             <Button variant="contained" color="primary" startIcon={<IconLayoutGridAdd />}>
@@ -94,6 +113,7 @@ const page = () => {
             </Button>
           </Link>
         </Tooltip>
+      </div>
       </Box>
 
       <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 2 }}>
@@ -107,7 +127,7 @@ const page = () => {
           className='w-44'
         >
           {isLoading2 ? (
-                  <MenuItem value="">Loading categories...</MenuItem>
+                  <MenuItem value="">Loading categories... <Spin/></MenuItem>
                 ) : (
                   categories?.map((category: { _id: string; name: string }) => (
                     <MenuItem key={category._id} value={category._id}>

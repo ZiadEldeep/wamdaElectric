@@ -9,9 +9,8 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
-  CircularProgress,
 } from "@mui/material";
-import { IconListCheck, IconMail, IconUser } from "@tabler/icons-react";
+import {  IconMail, IconUser } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { getUserData } from "@/lib/actions/user.action";
 
@@ -32,7 +31,6 @@ const [userEmail, setemail] = useState("guest@example.com")
 useEffect(() => {
   setname(userData?.name||"Guest" )
   setemail(userData?.email ||"guest@example.com")
-  console.log(userData)
   userData &&setisLogin&&setisLogin(true)
 }, [isLoading])
 

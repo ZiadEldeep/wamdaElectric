@@ -18,7 +18,7 @@ interface IProduct extends Document {
 }
 
 const ProductSchema: Schema = new Schema({
-  barcode: { type: String, required: true },
+  barcode: { type: String, required: true,unique:true },
   itemName: { type: String, required: true },
   unit: { type: String, required: true },
   categoryName: { type: String, required: true },
@@ -32,10 +32,10 @@ const ProductSchema: Schema = new Schema({
   category: {
     type: Schema.Types.ObjectId, // This references the Category model
     ref: 'Category',
-    required: true, // Make category required if all products must belong to a category
+    // required: true, 
   },
   unitName2: { type: String, required: true },
-  productImage: { type: String, required: true },
+  productImage: { type: String },
   rating:{type:Number,default:4}
 });
 

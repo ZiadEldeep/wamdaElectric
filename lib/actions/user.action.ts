@@ -96,11 +96,11 @@ export async function getUserData() {
   const cookieStore = cookies();
   const userDataCookie = cookieStore.get('userData');
   
-  console.error("iiiiiiiiiiiii-----",userDataCookie)
+  // console.error("iiiiiiiiiiiii-----",userDataCookie)
   if (userDataCookie) {
     try {
       const userData = JSON.parse(userDataCookie.value);
-      console.log(userData)
+      // console.log(userData)
       return userData;
     } catch (error) {
       console.error('Error parsing user data cookie:', error);

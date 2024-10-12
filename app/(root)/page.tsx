@@ -4,12 +4,10 @@ import { useQuery } from '@tanstack/react-query';
 import LandingPage from '../../components/landingpage';
 import { getTypePriceByRole } from '@/hooks/role';
 import { getUserData } from '@/lib/actions/user.action';
-import Blog from '@/app/(DashboardLayout)/components/dashboard/Blog';
 import { Spin } from 'antd';
 import CategoryTabs from '@/components/shared/CategoryTabs';
 import { Box, Pagination } from '@mui/material';
 
-// Function to fetch products
 const fetchProducts = async (category: string | null, page: number) => {
   const params = new URLSearchParams();
   params.append('pageSize', "8");

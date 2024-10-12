@@ -13,8 +13,6 @@ import {
 import BlankCard from "@/app/(DashboardLayout)/components/shared/BlankCard";
 import { getPriceByRole } from '@/hooks/role';
 
-
-// Interface for product data
 export interface ProductFormData {
   _id: string;
   barcode: string;
@@ -53,7 +51,7 @@ const Blog = ({ products, role }: { products: ProductFormData[], role: string })
             <Tooltip title="Click to view product details" arrow>
               <Typography component={Link} href={`${role==="admin"?'/dashboard/utilities':''}/products/${product._id}`}>
                 <Avatar
-                  src={product.productImage}  // Use productImage instead of photo
+                  src={product.productImage||"/images/default-product.png"}  // Use productImage instead of photo
                   variant="square"
                   sx={{
                     height: 250,

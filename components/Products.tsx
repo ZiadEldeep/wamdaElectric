@@ -1,24 +1,11 @@
-/** @jsxImportSource @emotion/react */
-import { css } from "@emotion/react";
-import styled from "@emotion/styled";
-import { Box, Button, Tooltip } from "@mui/material";
 import React, { useState } from "react";
 import * as XLSX from "xlsx";
-import  Link  from 'next/link';
-import { IconLayoutGridAdd } from "@tabler/icons-react";
-
-interface FileData {
-  [key: string]: string | number;
-}
-
-const dealers = ["Dealer 1", "Dealer 2", "Dealer 3", "Dealer 4", "Dealer 5"];
-
-// Styled components
-const PageWrapper = styled.div`
-  padding: 2rem;
-  min-height: 100vh;
-  `;
-  // background: linear-gradient(135deg, #f0f4c3, #a7ffeb);
+import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
+import { IconUpload } from "@tabler/icons-react";
+import { motion, AnimatePresence } from "framer-motion";
+import styled from "@emotion/styled";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const FileInput = styled.input`
   padding: 0.75rem;
@@ -41,202 +28,201 @@ const FileInput = styled.input`
   }
 `;
 
-const TableWrapper = styled.div`
-  overflow-x: auto;
-  margin-top: 1.5rem;
-  background-color: #fff;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+const StyledLabel = styled.label`
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
 `;
 
-const DealerSection = styled.div`
-  margin-top: 2rem;
-  background: #fff;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-`;
+interface ProductFormData {
+  barcode: string;
+  itemName: string;
+  unit: string;
+  categoryName: string;
+  purchasePrice: number;
+  salePrice: number;
+  unitCost: number;
+  wholesale1: number;
+  wholesale2: number;
+  unitName2: string;
+  exhibitSalePrice: number;
+  websiteSalePrice: number;
+  productImage: string;
+}
 
-const AssignButton = styled.button`
-  margin-left: 1rem;
-  background: #29b6f6;
-  color: #fff;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1rem;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-  transition: background 0.3s ease, transform 0.2s ease;
-  
-  &:hover {
-    background: #0288d1;
-    transform: scale(1.05);
-  }
-`;
-
-const Loader = styled.div`
-  border: 4px solid #f3f3f3; /* Light gray */
-  border-top: 4px solid #3498db; /* Blue */
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  animation: spin 1s linear infinite;
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-`;
-
-const Products: React.FC = () => {
-  const [fileData, setFileData] = useState<FileData[]>([]);
-  const [selectedCells, setSelectedCells] = useState<{ row: number; col: string }[]>([]);
-  const [dealerPrivileges, setDealerPrivileges] = useState<{ [dealer: string]: { row: number; col: string }[] }>({});
-  const [selectedDealer, setSelectedDealer] = useState<string>(dealers[0]);
+const Products= ({refetch}:{refetch:()=>void}) => {
+  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [file, setFile] = useState<File | null>(null);
 
-  // Handle file upload and parsing
+  const handleToggleDialog = () => {
+    setOpen(!open);
+    setFile(null);
+    console.log("Dialog toggled:", !open);
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setLoading(true); // Start loading
+    const selectedFile = e.target.files?.[0];
+    console.log("Selected file:", selectedFile);
+    if (selectedFile) {
+      setFile(selectedFile);
+    }
+  };
+
+  const sendProductToAPI = async (product: ProductFormData) => {
+    console.log("Sending product to API:", product);
+    const response = await axios.post("/api/products", product);
+    console.log("API response:", response.data);
+    return response.data;
+  };
+
+  const getImageBase64 = async (image: Blob) => {
+    return new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.readAsDataURL(image);
+      reader.onloadend = () => {
+        console.log("Image converted to Base64:", reader.result);
+        resolve(reader.result as string);
+      };
+      reader.onerror = (error) => {
+        console.error("Error converting image to Base64:", error);
+        reject(error);
+      };
+    });
+  };
+
+  const handleSubmit = async () => {
+    if (file) {
+      console.log("Submitting file:", file);
+      const loadingToastId = toast.loading("Uploading products...");
+      setLoading(true);
+  
+      const reader = new FileReader();
+      reader.onload = async (event) => {
         const data = new Uint8Array(event.target?.result as ArrayBuffer);
         const workbook = XLSX.read(data, { type: "array" });
         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-        const jsonData = XLSX.utils.sheet_to_json<FileData>(firstSheet);
-        setFileData(jsonData);
-        setLoading(false); // Stop loading
+        const jsonData: any[] = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+  
+        console.log("Excel data loaded:", jsonData);
+  
+        let successCount = 0;
+        let errorCount = 0;
+  
+        // ابدأ من الصف الثاني (تجاهل الصف الأول)
+        for (let i = 1; i < jsonData.length; i++) {
+          const row = jsonData[i];
+          console.log(`Processing row ${i}:`, row);
+  
+          if (row.length < 12 || row.some((cell: any) => cell === undefined || cell === "")) {
+            console.warn(`Skipping row ${i}: invalid data`);
+            if (row.length===0) {
+            }else{
+              errorCount++;
+
+            }
+            continue;
+          }
+  
+          try {
+            let productImageUrl = "";
+  
+            // تحقق من وجود العمود 13 (الصورة)
+            if (row.length === 13 && row[12]) {
+              const productImageBlob = row[12]; // العمود المخصص للصورة
+              const base64Image = await getImageBase64(productImageBlob);
+              productImageUrl = base64Image;
+              console.log(`Product image for row ${i} converted to Base64`);
+            }
+  
+            const formattedProduct: ProductFormData = {
+              barcode: row[0]?.toString() || "",
+              itemName: row[1]?.toString() || "",
+              unit: row[2]?.toString() || "",
+              categoryName: row[3]?.toString() || "",
+              purchasePrice: Number(row[4]) || 0,
+              salePrice: Number(row[5]) || 0,
+              unitCost: Number(row[6]) || 0,
+              wholesale1: Number(row[7]) || 0,
+              wholesale2: Number(row[8]) || 0,
+              unitName2: row[9]?.toString() || "",
+              exhibitSalePrice: Number(row[10]) || 0,
+              websiteSalePrice: Number(row[11]) || 0,
+              productImage: productImageUrl, // إذا كانت الصورة موجودة، يتم تعيينها
+            };
+  
+            console.log(`Formatted product for row ${i}:`, formattedProduct);
+  
+            await sendProductToAPI(formattedProduct);
+            successCount++;
+          } catch (error) {
+            console.error(`Error processing row ${i}:`, error);
+            errorCount++;
+          }
+        }
+  
+        setLoading(false);
+        toast.dismiss(loadingToastId);
+  
+        console.log(`Upload completed: ${successCount} success, ${errorCount} errors`);
+        if (successCount > 0 && errorCount === 0) {
+          toast.success(`${successCount} products uploaded successfully!`);
+          refetch()
+        } else if (successCount > 0 && errorCount > 0) {
+          toast.warn(`${successCount} products uploaded successfully, but ${errorCount} failed.`);
+          refetch();
+        } else {
+          toast.error(`All products failed to upload.`);
+        }
+  
+        handleToggleDialog();
       };
       reader.readAsArrayBuffer(file);
-    }
-  };
-
-  // Handle cell selection (checkbox click)
-  const handleCellSelect = (row: number, col: string) => {
-    const alreadySelected = selectedCells.some((cell) => cell.row === row && cell.col === col);
-    if (alreadySelected) {
-      setSelectedCells((prev) => prev.filter((cell) => !(cell.row === row && cell.col === col)));
     } else {
-      setSelectedCells((prev) => [...prev, { row, col }]);
+      console.warn("No file selected");
+      toast.error("Please select a file before submitting.");
     }
   };
-
-  // Handle assigning selected cells to the chosen dealer
-  const handleAssignToDealer = () => {
-    if (!selectedCells.length) return;
-
-    setDealerPrivileges((prev) => ({
-      ...prev,
-      [selectedDealer]: [...(prev[selectedDealer] || []), ...selectedCells],
-    }));
-
-    setSelectedCells([]); // Clear selected cells after assignment
-  };
+  
 
   return (
-    <PageWrapper>
-      <label htmlFor="file-upload" css={css`display: block; margin-bottom: 0.5rem; font-size: 1.25rem; font-weight: 600;`}>
-        Upload Excel File
-      </label>
-      <FileInput
-        type="file"
-        id="file-upload"
-        accept=".xlsx, .xls"
-        onChange={handleFileChange}
-        title="Choose an Excel file to upload"
-      />
-      {/* Loader */}
-      {loading && <Loader css={css`margin: 1rem auto; display: block;`} />}
-      
-      {/* Display File Data */}
-      {fileData.length > 0 && (
-        <TableWrapper>
-          <h3 css={css`font-size: 1.5rem; margin-bottom: 1rem; color: #333;`}>Extracted Data</h3>
-          <table css={css`width: 100%; border-collapse: collapse;`}>
-            <thead>
-              <tr>
-                {Object.keys(fileData[0]).map((key) => (
-                  <th key={key} css={css`padding: 0.5rem; background: #b3e5fc; border: 1px solid #90caf9; text-align: left;`}>{key}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {fileData.map((row, rowIndex) => (
-                <tr key={rowIndex}>
-                  {Object.entries(row).map(([key, value], colIndex) => (
-                    <td key={colIndex} css={css`padding: 0.5rem; border: 1px solid #eee;`}>
-                      {value}
-                      <div css={css`margin-top: 0.25rem;`}>
-                        <input
-                          type="checkbox"
-                          checked={selectedCells.some((cell) => cell.row === rowIndex && cell.col === key)}
-                          onChange={() => handleCellSelect(rowIndex, key)}
-                          css={css`margin-right: 0.5rem;`}
-                        />
-                      </div>
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </TableWrapper>
-      )}
+    <div>
+      <Button variant="contained" color="primary" onClick={handleToggleDialog} startIcon={<IconUpload size={24} />}>
+        Add Excel File
+      </Button>
 
-      {/* Dealer Assignment Section */}
-      {fileData.length > 0 && (
-        <DealerSection>
-          <div css={css`display: flex; align-items: center;`}>
-            <label css={css`margin-right: 1rem; font-size: 1.25rem;`}>Assign to Dealer:</label>
-            <select
-              value={selectedDealer}
-              onChange={(e) => setSelectedDealer(e.target.value)}
-              css={css`padding: 0.5rem; border: 1px solid #ccc; border-radius: 8px; background-color: #f5f5f5;`}
-            >
-              {dealers.map((dealer) => (
-                <option key={dealer} value={dealer}>
-                  {dealer}
-                </option>
-              ))}
-            </select>
-            <AssignButton onClick={handleAssignToDealer} disabled={selectedCells.length === 0}>
-              Assign Selected Cells
-            </AssignButton>
-          </div>
+      <AnimatePresence>
+        {open && (
+          <Dialog open={open} onClose={handleToggleDialog} fullWidth maxWidth="sm">
+            <DialogTitle>Upload Excel File</DialogTitle>
 
-          {/* Display Assigned Data */}
-          {dealers.map((dealer) => (
-            <div key={dealer} css={css`margin-top: 1.5rem;`}>
-              <h3 css={css`font-size: 1.25rem; margin-bottom: 0.5rem;`}>{dealer}</h3>
-              {dealerPrivileges[dealer] && dealerPrivileges[dealer].length > 0 ? (
-                <table css={css`width: 100%; border-collapse: collapse; margin-top: 0.5rem;`}>
-                  <thead>
-                    <tr>
-                      <th css={css`padding: 0.5rem; border: 1px solid #eee;`}>Row</th>
-                      <th css={css`padding: 0.5rem; border: 1px solid #eee;`}>Column</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {dealerPrivileges[dealer].map(({ row, col }, index) => (
-                      <tr key={index}>
-                        <td css={css`padding: 0.5rem; border: 1px solid #eee;`}>{row + 1}</td>
-                        <td css={css`padding: 0.5rem; border: 1px solid #eee;`}>{col}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <p css={css`margin-top: 0.5rem; color: #666;`}>No assigned cells</p>
-              )}
-            </div>
-          ))}
-        </DealerSection>
-      )}
-    </PageWrapper>
+            <DialogContent>
+              <StyledLabel htmlFor="file-upload">Choose a file to upload:</StyledLabel>
+
+              <FileInput
+                type="file"
+                id="file-upload"
+                accept=".xlsx, .xls"
+                onChange={handleFileChange}
+                title="Choose an Excel file to upload"
+              />
+            </DialogContent>
+
+            <DialogActions>
+              <Button onClick={handleToggleDialog} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={handleSubmit} color="primary" disabled={loading}>
+                Submit
+              </Button>
+            </DialogActions>
+
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
+          </Dialog>
+        )}
+      </AnimatePresence>
+    </div>
   );
 };
 

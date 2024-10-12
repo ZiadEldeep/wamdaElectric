@@ -77,21 +77,23 @@ export async function POST(req: Request) {
     await connectDB();
     const body = await req.json();
     
-    // إنشاء منتج جديد
     const newProduct = new Product(body);
     const savedProduct = await newProduct.save();
     
-    // بعد حفظ المنتج، تحديث الفئة الخاصة به
-    const categoryId = body.category; // التأكد من أنك ترسل categoryId مع البيانات
-    const category = await Category.findById(categoryId);
     
-    if (!category) {
-      return NextResponse.json({ message: 'Category not found' }, { status: 404 });
+    if (body.category) {
+      
+      const categoryId = body.category; // التأكد من أنك ترسل categoryId مع البيانات
+      const category = await Category.findById(categoryId);
+      
+      if (!category) {
+        return NextResponse.json({ message: 'Category not found' }, { status: 404 });
+      }
+      
+      // إضافة معرف المنتج إلى قائمة المنتجات في الفئة
+      category.products.push(savedProduct._id);
+      await category.save();
     }
-    
-    // إضافة معرف المنتج إلى قائمة المنتجات في الفئة
-    category.products.push(savedProduct._id);
-    await category.save();
 
     return NextResponse.json(savedProduct, { status: 201 });
   } catch (error) {
