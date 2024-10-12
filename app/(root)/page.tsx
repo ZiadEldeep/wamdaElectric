@@ -84,14 +84,14 @@ const Page = () => {
 
   return (
     <div>
-      {!productsLoading2&&<LandingPage products={products2.products} type={getTypePriceByRole(userData.role)} />}
+      {!productsLoading2&&<LandingPage products={products2.products} type={getTypePriceByRole(userData?userData.role:"")} />}
       <CategoryTabs 
         selectedCategory={selectedCategory} 
         setSelectedCategory={setSelectedCategory} 
         products={!productsLoading?products.products:[]} 
         categories={categories} 
         productsLoading={productsLoading}
-        role={getTypePriceByRole(userData.role)} 
+        role={getTypePriceByRole(userData?userData.role:"")} 
       />
       
       {/* Pagination Controls */}

@@ -23,7 +23,7 @@ SwiperCore.use([Autoplay, Pagination, Navigation]);
 
 const LandingPage= ({products,type}:{products:ProductFormData[],type:string}) => {
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-[70vh] bg-white text-gray-900">
       <section id="products" className="py-16 px-4">
         <Swiper
           autoplay={{ delay: 4000, disableOnInteraction: false }}
