@@ -1,8 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
+import { Box, Button, Tooltip } from "@mui/material";
 import React, { useState } from "react";
 import * as XLSX from "xlsx";
+import  Link  from 'next/link';
+import { IconLayoutGridAdd } from "@tabler/icons-react";
 
 interface FileData {
   [key: string]: string | number;
@@ -17,13 +20,6 @@ const PageWrapper = styled.div`
   `;
   // background: linear-gradient(135deg, #f0f4c3, #a7ffeb);
 
-// const Title = styled.h2`
-//   font-size: 2.5rem;
-//   font-weight: 800;
-//   color: #444;
-//   margin-bottom: 1.5rem;
-// `;
-
 const FileInput = styled.input`
   padding: 0.75rem;
   border: 1px solid #ccc;
@@ -37,6 +33,11 @@ const FileInput = styled.input`
   cursor: pointer;
   &:hover {
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  }
+  transition: border-color 0.3s;
+  &:focus {
+    border-color: #29b6f6;
+    outline: none;
   }
 `;
 
@@ -67,9 +68,25 @@ const AssignButton = styled.button`
   cursor: pointer;
   font-size: 1rem;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, transform 0.2s ease;
+  
   &:hover {
     background: #0288d1;
+    transform: scale(1.05);
+  }
+`;
+
+const Loader = styled.div`
+  border: 4px solid #f3f3f3; /* Light gray */
+  border-top: 4px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 `;
 
@@ -78,11 +95,13 @@ const Products: React.FC = () => {
   const [selectedCells, setSelectedCells] = useState<{ row: number; col: string }[]>([]);
   const [dealerPrivileges, setDealerPrivileges] = useState<{ [dealer: string]: { row: number; col: string }[] }>({});
   const [selectedDealer, setSelectedDealer] = useState<string>(dealers[0]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   // Handle file upload and parsing
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setLoading(true); // Start loading
       const reader = new FileReader();
       reader.onload = (event) => {
         const data = new Uint8Array(event.target?.result as ArrayBuffer);
@@ -90,6 +109,7 @@ const Products: React.FC = () => {
         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
         const jsonData = XLSX.utils.sheet_to_json<FileData>(firstSheet);
         setFileData(jsonData);
+        setLoading(false); // Stop loading
       };
       reader.readAsArrayBuffer(file);
     }
@@ -119,9 +139,6 @@ const Products: React.FC = () => {
 
   return (
     <PageWrapper>
-      {/* <Title>Admin Page</Title> */}
-
-      {/* File Upload */}
       <label htmlFor="file-upload" css={css`display: block; margin-bottom: 0.5rem; font-size: 1.25rem; font-weight: 600;`}>
         Upload Excel File
       </label>
@@ -132,7 +149,9 @@ const Products: React.FC = () => {
         onChange={handleFileChange}
         title="Choose an Excel file to upload"
       />
-
+      {/* Loader */}
+      {loading && <Loader css={css`margin: 1rem auto; display: block;`} />}
+      
       {/* Display File Data */}
       {fileData.length > 0 && (
         <TableWrapper>
@@ -197,23 +216,21 @@ const Products: React.FC = () => {
                 <table css={css`width: 100%; border-collapse: collapse; margin-top: 0.5rem;`}>
                   <thead>
                     <tr>
-                      <th css={css`padding: 0.5rem; background: #b3e5fc; border: 1px solid #90caf9;`}>Row</th>
-                      <th css={css`padding: 0.5rem; background: #b3e5fc; border: 1px solid #90caf9;`}>Column</th>
-                      <th css={css`padding: 0.5rem; background: #b3e5fc; border: 1px solid #90caf9;`}>Value</th>
+                      <th css={css`padding: 0.5rem; border: 1px solid #eee;`}>Row</th>
+                      <th css={css`padding: 0.5rem; border: 1px solid #eee;`}>Column</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {dealerPrivileges[dealer].map((cell, index) => (
+                    {dealerPrivileges[dealer].map(({ row, col }, index) => (
                       <tr key={index}>
-                        <td css={css`padding: 0.5rem; border: 1px solid #eee;`}>{cell.row}</td>
-                        <td css={css`padding: 0.5rem; border: 1px solid #eee;`}>{cell.col}</td>
-                        <td css={css`padding: 0.5rem; border: 1px solid #eee;`}>{fileData[cell.row][cell.col]}</td>
+                        <td css={css`padding: 0.5rem; border: 1px solid #eee;`}>{row + 1}</td>
+                        <td css={css`padding: 0.5rem; border: 1px solid #eee;`}>{col}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               ) : (
-                <p css={css`font-size: 1rem; color: #666;`}>No cells assigned yet.</p>
+                <p css={css`margin-top: 0.5rem; color: #666;`}>No assigned cells</p>
               )}
             </div>
           ))}

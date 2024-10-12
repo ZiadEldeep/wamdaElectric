@@ -1,67 +1,36 @@
-
+import React from 'react';
 import {
-    Typography, Box,
+    Typography,
+    Box,
     Table,
     TableBody,
     TableCell,
     TableHead,
     TableRow,
-    Chip
+    Chip,
+    Button,
 } from '@mui/material';
-import DashboardCard from '@/app/(DashboardLayout)//components/shared/DashboardCard';
+import { useRouter } from 'next/navigation';
+import { IUser } from '@/lib/models/user.models'; // Ensure the path is correct
+import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
 
-const products = [
-    {
-        id: "1",
-        name: "Admin 1",
-        post: "CEO",
-        pname: "Elite Admin",
-        priority: "Low",
-        pbg: "primary.main",
-        budget: "3.9",
-    },
-    {
-        id: "2",
-        name: "Admin 2",
-        post: "Project Manager",
-        pname: "Real Homes WP Theme",
-        priority: "Medium",
-        pbg: "secondary.main",
-        budget: "24.5",
-    },
-    {
-        id: "3",
-        name: "Admin 3",
-        post: "Project Manager",
-        pname: "MedicalPro WP Theme",
-        priority: "High",
-        pbg: "error.main",
-        budget: "12.8",
-    },
-    {
-        id: "4",
-        name: "Admin 4",
-        post: "Frontend Engineer",
-        pname: "Hosting Press HTML",
-        priority: "Critical",
-        pbg: "success.main",
-        budget: "2.4",
-    },
-];
+interface ProductPerformanceProps {
+    userData: {  name: string;
+        _id: string;
+        email: string;
+        password: string;
+        createdAt: Date;
+        isApproved: boolean;
+        role: 'admin' | 'wholesale1' | 'wholesale2' | 'retail';}[]; // Specify that userData is an array of IUser
+}
 
+const ProductPerformance: React.FC<ProductPerformanceProps> = ({ userData }) => {
+    const router = useRouter();
 
-const ProductPerformance = () => {
     return (
-
-        <DashboardCard title="Product Performance">
+        <DashboardCard title="Users Performance">
             <Box sx={{ overflow: 'auto', width: { xs: '280px', sm: 'auto' } }}>
-                <Table
-                    aria-label="simple table"
-                    sx={{
-                        whiteSpace: "nowrap",
-                        mt: 2
-                    }}
-                >
+                <Table aria-label="simple table" sx={{ whiteSpace: "nowrap", mt: 2 }}>
                     <TableHead>
                         <TableRow>
                             <TableCell>
@@ -71,15 +40,15 @@ const ProductPerformance = () => {
                             </TableCell>
                             <TableCell>
                                 <Typography variant="subtitle2" fontWeight={600}>
-                                    Assigned
-                                </Typography>
-                            </TableCell>
-                            <TableCell>
-                                <Typography variant="subtitle2" fontWeight={600}>
                                     Name
                                 </Typography>
                             </TableCell>
                             <TableCell>
+                                <Typography variant="subtitle2" fontWeight={600}>
+                                    Email
+                                </Typography>
+                            </TableCell>
+                            {/* <TableCell>
                                 <Typography variant="subtitle2" fontWeight={600}>
                                     Priority
                                 </Typography>
@@ -88,67 +57,56 @@ const ProductPerformance = () => {
                                 <Typography variant="subtitle2" fontWeight={600}>
                                     Budget
                                 </Typography>
-                            </TableCell>
+                            </TableCell> */}
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {products.map((product) => (
-                            <TableRow key={product.name}>
+                        {userData.slice(0, 4).map((product) => (
+                            <TableRow key={product._id}>
                                 <TableCell>
-                                    <Typography
-                                        sx={{
-                                            fontSize: "15px",
-                                            fontWeight: "500",
-                                        }}
-                                    >
-                                        {product.id}
+                                    <Typography sx={{ fontSize: "15px", fontWeight: "500" }}>
+                                        {product._id}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Box
-                                        sx={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                        }}
-                                    >
+                                    <Box sx={{ display: "flex", alignItems: "center" }}>
                                         <Box>
                                             <Typography variant="subtitle2" fontWeight={600}>
                                                 {product.name}
                                             </Typography>
-                                            <Typography
-                                                color="textSecondary"
-                                                sx={{
-                                                    fontSize: "13px",
-                                                }}
-                                            >
-                                                {product.post}
+                                            <Typography color="textSecondary" sx={{ fontSize: "13px" }}>
+                                                {product.role}
                                             </Typography>
                                         </Box>
                                     </Box>
                                 </TableCell>
                                 <TableCell>
                                     <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                        {product.pname}
+                                        {product.email}
                                     </Typography>
                                 </TableCell>
-                                <TableCell>
+                                {/* <TableCell>
                                     <Chip
-                                        sx={{
-                                            px: "4px",
-                                            backgroundColor: product.pbg,
-                                            color: "#fff",
-                                        }}
+                                        sx={{ px: "4px", backgroundColor: "primary.main", color: "#fff" }}
                                         size="small"
-                                        label={product.priority}
-                                    ></Chip>
+                                        label="Low" // Adjust dynamically as needed
+                                    />
                                 </TableCell>
                                 <TableCell align="right">
-                                    <Typography variant="h6">${product.budget}k</Typography>
-                                </TableCell>
+                                    <Typography variant="h6">$0.00</Typography> 
+                                </TableCell> */}
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
+            </Box>
+            <Box mt={2} display="flex" justifyContent="flex-end">
+                <Button
+                    variant="outlined"
+                    onClick={() => router.push('/dashboard/utilities/users')}
+                >
+                    Show More
+                </Button>
             </Box>
         </DashboardCard>
     );

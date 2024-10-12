@@ -34,7 +34,7 @@ export default function RootLayout({
   const [isSidebarOpen] = useState(true);
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   return (
-    <MainWrapper className="mainwrapper">
+    <MainWrapper className="mainwrapper" >
       {/* ------------------------------------------- */}
       {/* Sidebar */}
       {/* ------------------------------------------- */}

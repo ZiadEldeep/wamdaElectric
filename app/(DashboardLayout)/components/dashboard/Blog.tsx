@@ -1,4 +1,4 @@
-
+import React from 'react';
 import Link from "next/link";
 import {
   CardContent,
@@ -6,102 +6,107 @@ import {
   Grid,
   Rating,
   Tooltip,
-  Fab,
+  Stack,
   Avatar
 } from "@mui/material";
-// import img1 from "public/images/products/s4.jpg";
-// import img2 from "public/images/products/s5.jpg";
-// import img3 from "public/images/products/s7.jpg";
-// import img4 from "public/images/products/s11.jpg";
-import { Stack } from "@mui/system";
-import { IconBasket } from "@tabler/icons-react";
+
 import BlankCard from "@/app/(DashboardLayout)/components/shared/BlankCard";
-// import Image from "next/image";
+import { getPriceByRole } from '@/hooks/role';
 
-const ecoCard = [
-  {
-    title: "name product",
-    subheader: "September 14, 2023",
-    photo: '/images/pic4.webp',
-    salesPrice: 375,
-    price: 285,
-    rating: 4,
-  },
-  {
-    title: "name product",
-    subheader: "September 14, 2023",
-    photo: '/images/pic2.webp',
-    salesPrice: 650,
-    price: 900,
-    rating: 5,
-  },
-  {
-    title: "name product",
-    subheader: "September 14, 2023",
-    photo: '/images/pic1.webp',
-    salesPrice: 150,
-    price: 200,
-    rating: 3,
-  },
-  {
-    title: "name product",
-    subheader: "September 14, 2023",
-    photo: '/images/pic3.webp',
-    salesPrice: 285,
-    price: 345,
-    rating: 2,
-  },
-];
 
-const Blog = () => {
+// Interface for product data
+export interface ProductFormData {
+  _id: string;
+  barcode: string;
+  itemName: string;
+  unit: string;
+  categoryName: string;
+  category: string;
+  purchasePrice: number;
+  rating: number;
+  salePrice: number;
+  unitCost: number;
+  wholesale1: number;
+  wholesale2: number;
+  unitName2?: string;
+  exhibitSalePrice: number;
+  websiteSalePrice: number;
+  productImage: string;
+}
+
+// Function to fetch products
+const fetchProducts = async () => {
+  const response = await fetch('/api/products'); // Adjust the API endpoint as needed
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return response.json();
+};
+
+const Blog = ({ products, role }: { products: ProductFormData[], role: string }) => {
+  console.log(role)
   return (
     <Grid container spacing={3}>
-      {ecoCard.map((product, index) => (
-        <Grid item xs={12} md={4} lg={3} key={index}>
+      {products.map((product: ProductFormData) => (
+        <Grid item xs={12} md={4} lg={3} key={product.barcode}>
           <BlankCard>
-            <Typography component={Link} href="/">
-              <Avatar
-                src={product.photo} variant="square"
-                sx={{
-                  height: 250,
-                  width: '100%',
-                }}
-                
-              />
-            </Typography>
-            <Tooltip title="Add To Cart">
-              <Fab
-                size="small"
-                color="primary"
-                sx={{ bottom: "75px", right: "15px", position: "absolute" }}
-              >
-                <IconBasket size="16" />
-              </Fab>
+            <Tooltip title="Click to view product details" arrow>
+              <Typography component={Link} href={`${role==="admin"?'/dashboard/utilities':''}/products/${product._id}`}>
+                <Avatar
+                  src={product.productImage}  // Use productImage instead of photo
+                  variant="square"
+                  sx={{
+                    height: 250,
+                    width: '100%',
+                  }}
+                />
+              </Typography>
             </Tooltip>
             <CardContent sx={{ p: 3, pt: 2 }}>
-              <Typography variant="h6">{product.title}</Typography>
-              <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-                mt={1}
-              >
-                <Stack direction="row" alignItems="center">
-                  <Typography variant="h6">${product.price}</Typography>
-                  <Typography
-                    color="textSecondary"
-                    ml={1}
-                    sx={{ textDecoration: "line-through" }}
-                  >
-                    ${product.salesPrice}
-                  </Typography>
-                </Stack>
-                <Rating
-                  name="read-only"
-                  size="small"
-                  value={product.rating}
-                  readOnly
-                />
+              <Tooltip title={`Product Name: ${product.itemName}`} arrow>
+                <Typography variant="h6">{product.itemName}</Typography>
+              </Tooltip>
+
+              <Tooltip title={`Category: ${product.categoryName}`} arrow>
+                <Typography variant="body2" color="textSecondary">Category: {product.categoryName}</Typography>
+              </Tooltip>
+
+              <Tooltip title={`Unit: ${product.unit}`} arrow>
+                <Typography variant="body2" color="textSecondary">Unit: {product.unit}</Typography>
+              </Tooltip>
+
+              {/* Displaying prices based on role */}
+              <Stack direction="column" spacing={1} mt={2}>
+                {role === 'admin' ? (
+                  // If role is admin, show all prices
+                  <>
+                    <Tooltip title={`Sale Price: $${product.salePrice}`} arrow>
+                      <Typography variant="body2" color="textSecondary">Sale Price: ${product.salePrice}</Typography>
+                    </Tooltip>
+                    <Tooltip title={`Wholesale Price 1: $${product.wholesale1}`} arrow>
+                      <Typography variant="body2" color="textSecondary">Wholesale 1: ${product.wholesale1}</Typography>
+                    </Tooltip>
+                    <Tooltip title={`Wholesale Price 2: $${product.wholesale2}`} arrow>
+                      <Typography variant="body2" color="textSecondary">Wholesale 2: ${product.wholesale2}</Typography>
+                    </Tooltip>
+                    <Tooltip title={`Exhibit Sale Price: $${product.exhibitSalePrice}`} arrow>
+                      <Typography variant="body2" color="textSecondary">Exhibit Sale Price: ${product.exhibitSalePrice}</Typography>
+                    </Tooltip>
+                    <Tooltip title={`Website Sale Price: $${product.websiteSalePrice}`} arrow>
+                      <Typography variant="body2" color="textSecondary">Website Sale Price: ${product.websiteSalePrice}</Typography>
+                    </Tooltip>
+                  </>
+                ) : (
+                  // For other roles, show the price based on the role
+                  <Tooltip title={`Price: $${getPriceByRole(role, product)}`} arrow>
+                    <Typography variant="body2" color="textSecondary">Price: ${getPriceByRole(role, product)}</Typography>
+                  </Tooltip>
+                )}
+              </Stack>
+
+              {/* Rating */}
+              <Stack direction="row" justifyContent="space-between" alignItems="center" mt={2}>
+                <Rating name="read-only" size="small" value={product.rating} readOnly />
               </Stack>
             </CardContent>
           </BlankCard>
@@ -112,3 +117,117 @@ const Blog = () => {
 };
 
 export default Blog;
+
+// import React from 'react';
+// import Link from "next/link";
+// import {
+//   CardContent,
+//   Typography,
+//   Grid,
+//   Rating,
+//   Tooltip,
+//   Stack,
+
+//   Avatar
+// } from "@mui/material";
+
+// import BlankCard from "@/app/(DashboardLayout)/components/shared/BlankCard";
+
+// // Interface for product data
+// export interface ProductFormData {
+//   _id: string;
+//   barcode: string;
+//   itemName: string;          // Changed from title to itemName
+//   unit: string;
+//   categoryName: string;
+//   category: string;
+//   purchasePrice: number;
+//   rating: number;
+//   salePrice: number;
+//   unitCost: number;
+//   wholesale1: number;
+//   wholesale2: number;
+//   unitName2?: string;
+//   exhibitSalePrice: number;
+//   websiteSalePrice: number;
+//   productImage: string;      // Changed from photo to productImage
+// }
+
+// // Function to fetch products
+// const fetchProducts = async () => {
+//   const response = await fetch('/api/products'); // Adjust the API endpoint as needed
+//   if (!response.ok) {
+//     throw new Error('Network response was not ok');
+//   }
+//   return response.json();
+// };
+
+// const Blog = ({products}:{products:ProductFormData[]}) => {
+ 
+
+//   return (
+//     <Grid container spacing={3}>
+//       {products.map((product: ProductFormData) => (
+//         <Grid item xs={12} md={4} lg={3} key={product.barcode}>
+//           <BlankCard>
+//             <Tooltip title="Click to view product details" arrow>
+//               <Typography component={Link} href={`/dashboard/utilities/products/${product._id}`}>
+//                 <Avatar
+//                   src={product.productImage}  // Use productImage instead of photo
+//                   variant="square"
+//                   sx={{
+//                     height: 250,
+//                     width: '100%',
+//                   }}
+//                 />
+//               </Typography>
+//             </Tooltip>
+//             <CardContent sx={{ p: 3, pt: 2 }}>
+//               <Tooltip title={`Product Name: ${product.itemName}`} arrow> 
+//                 <Typography variant="h6">{product.itemName}</Typography>
+//               </Tooltip>
+
+//               <Tooltip title={`Category: ${product.categoryName}`} arrow>
+//                 <Typography variant="body2" color="textSecondary">Category: {product.categoryName}</Typography>
+//               </Tooltip>
+
+//               <Tooltip title={`Unit: ${product.unit}`} arrow>
+//                 <Typography variant="body2" color="textSecondary">Unit: {product.unit}</Typography>
+//               </Tooltip>
+
+//               <Stack direction="column" spacing={1} mt={2}>
+//                 {/* Displaying all the prices with tooltips */}
+//                 <Tooltip title={`Sale Price: $${product.salePrice}`} arrow>
+//                   <Typography variant="body2" color="textSecondary">Sale Price: ${product.salePrice}</Typography>
+//                 </Tooltip>
+
+//                 <Tooltip title={`Wholesale Price 1: $${product.wholesale1}`} arrow>
+//                   <Typography variant="body2" color="textSecondary">Wholesale 1: ${product.wholesale1}</Typography>
+//                 </Tooltip>
+
+//                 <Tooltip title={`Wholesale Price 2: $${product.wholesale2}`} arrow>
+//                   <Typography variant="body2" color="textSecondary">Wholesale 2: ${product.wholesale2}</Typography>
+//                 </Tooltip>
+
+//                 <Tooltip title={`Exhibit Sale Price: $${product.exhibitSalePrice}`} arrow>
+//                   <Typography variant="body2" color="textSecondary">Exhibit Sale Price: ${product.exhibitSalePrice}</Typography>
+//                 </Tooltip>
+
+//                 <Tooltip title={`Website Sale Price: $${product.websiteSalePrice}`} arrow>
+//                   <Typography variant="body2" color="textSecondary">Website Sale Price: ${product.websiteSalePrice}</Typography>
+//                 </Tooltip>
+//               </Stack>
+
+//               {/* Rating */}
+//               <Stack direction="row" justifyContent="space-between" alignItems="center" mt={2}>
+//                 <Rating name="read-only" size="small" value={product.rating} readOnly />
+//               </Stack>
+//             </CardContent>
+//           </BlankCard>
+//         </Grid>
+//       ))}
+//     </Grid>
+//   );
+// };
+
+// export default Blog;

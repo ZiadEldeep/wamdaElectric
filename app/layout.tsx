@@ -7,6 +7,7 @@ import { ToastContainer } from "react-toastify";
 import CssBaseline from "@mui/material/CssBaseline";
 import { baselightTheme } from "@/utils/theme/DefaultColors";
 import "react-toastify/dist/ReactToastify.css";
+import InfintyProvider from "@/components/providers/InfintyProvider";
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -24,10 +25,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    <InfintyProvider>
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+        >
         <ThemeProvider theme={baselightTheme}>
         <CssBaseline />
         {children}
@@ -35,5 +37,6 @@ export default function RootLayout({
         </ThemeProvider>
       </body>
     </html>
+        </InfintyProvider>
   );
 }

@@ -9,6 +9,7 @@ import {
   IconUserPlus,
   IconUsers,
   IconReceipt2,
+  IconCategoryPlus,
   // IconStethoscope,
   // IconPill,
 } from "@tabler/icons-react";
@@ -38,12 +39,17 @@ const Menuitems = [
     href: "/dashboard/utilities/users",
   },
 
-  // Added "Product" item
   {
     id: uniqueId(),
-    title: "Product",
+    title: "Products",
     icon: IconReceipt2, // You can choose any icon
     href: "/dashboard/utilities/products",
+  },
+  {
+    id: uniqueId(),
+    title: "Categories",
+    icon: IconCategoryPlus, // You can choose any icon
+    href: "/dashboard/utilities/categories",
   },
 
   {
@@ -58,9 +64,9 @@ const Menuitems = [
   },
   {
     id: uniqueId(),
-    title: "Register",
+    title: "Register Users",
     icon: IconUserPlus,
-    href: "/authentication/register",
+    href: "/dashboard/utilities/users/add",
   },
   // {
   //   navlabel: true,

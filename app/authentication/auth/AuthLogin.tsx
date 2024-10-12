@@ -2,18 +2,15 @@ import React from "react";
 import {
   Box,
   Typography,
-  FormGroup,
-  FormControlLabel,
   Button,
   Stack,
-  Checkbox,
 } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 import CustomTextField from "@/app/(DashboardLayout)/components/forms/theme-elements/CustomTextField";
 
 // مخطط التحقق باستخدام Zod
@@ -40,6 +37,10 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
     formState: { errors },
   } = useForm<LoginFormInputs>({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '', // Ensure email has a default value
+      password: '', // Ensure password has a default value
+    },
   });
 
   const handleLogin = async (values: LoginFormInputs) => {
@@ -64,7 +65,13 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
             isLoading: false,
             autoClose: 3000,
           });
-          router.push("/dashboard");
+          if (data.role === 'admin') {
+            console.log("admin")
+            router.push("/dashboard"); 
+          } else {
+            console.log("user")
+            router.push("/"); 
+          }
         } else {
           toast.update(loadingToastId, {
             render: "حسابك قيد الانتظار للموافقة. يرجى الانتظار.",
@@ -82,11 +89,9 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
           autoClose: 3000,
         });
       }
-
-    }
-    catch (error) {
+    } catch (error) {
       toast.update(loadingToastId, {
-        render: (error as {message:string})?.message || "فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.",
+        render: (error as { message: string })?.message || "فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.",
         type: "error",
         isLoading: false,
         autoClose: 3000,
@@ -111,10 +116,10 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
               variant="subtitle1"
               fontWeight={600}
               component="label"
-              htmlFor="username"
+              htmlFor="email"
               mb="5px"
             >
-              email
+              Email
             </Typography>
             {/* استخدام Controller للتحكم في المدخل */}
             <Controller
@@ -157,29 +162,14 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
               )}
             />
           </Box>
+          
           <Stack
             justifyContent="space-between"
             direction="row"
             alignItems="center"
             my={2}
           >
-            <FormGroup>
-              <FormControlLabel
-                control={<Checkbox defaultChecked />}
-                label="Remember this Device"
-              />
-            </FormGroup>
-            <Typography
-              component={Link}
-              href="/"
-              fontWeight="500"
-              sx={{
-                textDecoration: "none",
-                color: "primary.main",
-              }}
-            >
-              Forgot Password?
-            </Typography>
+            {/* Additional components can be added here */}
           </Stack>
         </Stack>
         <Box>
@@ -194,7 +184,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
           </Button>
         </Box>
       </form>
-      {subtitle}
+      {/* {subtitle} */}
     </>
   );
 };

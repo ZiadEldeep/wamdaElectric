@@ -9,7 +9,7 @@ type Props = {
   cardheading?: string | JSX.Element;
   headtitle?: string | JSX.Element;
   headsubtitle?: string | JSX.Element;
-  children?: JSX.Element;
+  children?: React.ReactNode; // Update to accept multiple children
   middlecontent?: string | JSX.Element;
 };
 
@@ -44,21 +44,20 @@ const DashboardCard = ({
               mb={3}
             >
               <Box>
-                {title ? <Typography variant="h5">{title}</Typography> : ""}
+                {title && <Typography variant="h5">{title}</Typography>}
 
-                {subtitle ? (
+                {subtitle && (
                   <Typography variant="subtitle2" color="textSecondary">
                     {subtitle}
                   </Typography>
-                ) : (
-                  ""
                 )}
               </Box>
               {action}
             </Stack>
           ) : null}
 
-          {children}
+          {/* Wrap children in a fragment */}
+          <>{children}</> 
         </CardContent>
       )}
 

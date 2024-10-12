@@ -1,13 +1,18 @@
-"use client"
-import React from 'react'
-// import  Products  from '@/components/Products';
+"use client";
+import AdminsDashboard from '@/components/shared/admins';
+import React from 'react';
 
-const page = () => {
+import UserTable from '@/components/shared/UserTable';
+
+const UsersPage = () => {
   return (
     <div>
-        {/* <Products/> */}
+     
+      {/* AdminsDashboard component */}
+      {/* <AdminsDashboard /> */}
+      <UserTable/>
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default UsersPage;

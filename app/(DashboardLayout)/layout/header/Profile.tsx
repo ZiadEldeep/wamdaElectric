@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Avatar,
@@ -9,27 +9,41 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
+  CircularProgress,
 } from "@mui/material";
-
-
 import { IconListCheck, IconMail, IconUser } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
+import { getUserData } from "@/lib/actions/user.action";
 
-const Profile = () => {
+const Profile = ({setisLogin}:{setisLogin?:(id:boolean)=>void}) => {
   const [anchorEl2, setAnchorEl2] = useState(null);
-  const handleClick2 = (event: any) => {
+
+  const handleClick2 = (event:any) => {
     setAnchorEl2(event.currentTarget);
   };
   const handleClose2 = () => {
     setAnchorEl2(null);
   };
 
+  // Fetch user data using React Query
+  const { data: userData, isLoading,isFetched, isError } = useQuery({queryKey:['userData'],queryFn:()=> getUserData()});
+const [userName, setname] = useState("Guest")
+const [userEmail, setemail] = useState("guest@example.com")
+useEffect(() => {
+  setname(userData?.name||"Guest" )
+  setemail(userData?.email ||"guest@example.com")
+  console.log(userData)
+  userData &&setisLogin&&setisLogin(true)
+}, [isLoading])
+
+
   return (
     <Box>
       <IconButton
         size="large"
-        aria-label="show 11 new notifications"
+        aria-label="show profile options"
         color="inherit"
-        aria-controls="msgs-menu"
+        aria-controls="profile-menu"
         aria-haspopup="true"
         sx={{
           ...(typeof anchorEl2 === "object" && {
@@ -40,7 +54,7 @@ const Profile = () => {
       >
         <Avatar
           src="/images/profile/user-1.jpg"
-          alt="image"
+          alt="user image"
           sx={{
             width: 35,
             height: 35,
@@ -48,10 +62,10 @@ const Profile = () => {
         />
       </IconButton>
       {/* ------------------------------------------- */}
-      {/* Message Dropdown */}
+      {/* Profile Dropdown */}
       {/* ------------------------------------------- */}
       <Menu
-        id="msgs-menu"
+        id="profile-menu"
         anchorEl={anchorEl2}
         keepMounted
         open={Boolean(anchorEl2)}
@@ -68,19 +82,13 @@ const Profile = () => {
           <ListItemIcon>
             <IconUser width={20} />
           </ListItemIcon>
-          <ListItemText>My Profile</ListItemText>
+          <ListItemText primary={userName} /> {/* Display user name */}
         </MenuItem>
         <MenuItem>
           <ListItemIcon>
             <IconMail width={20} />
           </ListItemIcon>
-          <ListItemText>My Account</ListItemText>
-        </MenuItem>
-        <MenuItem>
-          <ListItemIcon>
-            <IconListCheck width={20} />
-          </ListItemIcon>
-          <ListItemText>My Tasks</ListItemText>
+          <ListItemText primary={userEmail} /> {/* Display user email */}
         </MenuItem>
         <Box mt={1} py={1} px={2}>
           <Button
